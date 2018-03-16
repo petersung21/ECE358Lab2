@@ -1,0 +1,19 @@
+all: execute_GBN execute_ABP_NAK execute_ABP
+
+execute_GBN: run_GBN.sh
+	./run_GBN
+
+execute_ABP: run_ABP.sh
+	./run_ABP
+
+execute_ABP_NAK: run_ABP_NAK.sh
+	./run_ABP_NAK
+
+run_GBN.sh: main.py
+	"python main.py 3" > ./run_GBN.sh
+
+run_ABP.sh: main.py
+	"python main.py 1" > ./run_ABP.sh
+
+run_ABP_NAK.sh: main.py
+	"python main.py 2" > ./run_ABP_NAK.sh

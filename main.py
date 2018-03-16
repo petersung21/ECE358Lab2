@@ -126,7 +126,7 @@ def ABP(timeoutLength,BER,headerLength,packetLength,cRate,tau):
 		eventList.append(response)
 		eventList = sorted(eventList, key=lambda x: x[1], reverse=True);
 
-	while(totalPacket < 5000):
+	while(totalPacket < 10000):
 		#Pop Next event in event list
 		x = eventList.pop()
 
@@ -148,7 +148,7 @@ def ABP(timeoutLength,BER,headerLength,packetLength,cRate,tau):
 		elif(x[0] == "ACK"):
 			if(x[2] == NO_ERROR and Next_Expected_Ack_Sender == x[3]):
 				totalPacket = totalPacket + 1
-				if (totalPacket == 5000):
+				if (totalPacket == 10000):
 					break
 				#Update seq number and expected seq num
 				sequence_number = (sequence_number+1)%2
@@ -205,7 +205,7 @@ def ABP_NACK(timeoutLength,BER,headerLength,packetLength,cRate,tau):
 		eventList.append(response)
 		eventList = sorted(eventList, key=lambda x: x[1], reverse=True);
 
-	while(totalPacket < 5000):
+	while(totalPacket < 10000):
 		#Pop Next event in event list
 		x = eventList.pop()
 
@@ -227,7 +227,7 @@ def ABP_NACK(timeoutLength,BER,headerLength,packetLength,cRate,tau):
 		elif(x[0] == "ACK"):
 			if(x[2] == NO_ERROR and Next_Expected_Ack_Sender == x[3]):
 				totalPacket = totalPacket + 1
-				if (totalPacket == 5000):
+				if (totalPacket == 10000):
 					break
 				#Update seq number and expected seq num
 				sequence_number = (sequence_number+1)%2
@@ -388,7 +388,7 @@ def GBN(timeoutLength,BER,headerLength,packetLength,cRate,tau):
 
 	#currentTime = M[3][2]
 		
-	while(totalPacket < 5000):
+	while(totalPacket < 10000):
 		#Pop Next event in event list
 		x = eventList.pop()
 
@@ -441,7 +441,7 @@ def GBN(timeoutLength,BER,headerLength,packetLength,cRate,tau):
 			expectedNumbers = [(P+1)%5,(P+2)%5,(P+3)%5,(P+4)%5]
 			if(x[2] == NO_ERROR and x[3] in expectedNumbers):
 				totalPacket = totalPacket + 1
-				if (totalPacket == 5000):
+				if (totalPacket == 10000):
 					break;
 
 				slideCount = (x[3]-P)%5
@@ -498,64 +498,71 @@ def main():
 
 	print "Loading..."
 
+	mode = int(sys.argv[1])
 
 	for i in timeoutSet:
 		#Get Timeouts from Tau
 		timeoutNumberOne = i*tau[0]
 		timeoutNumberTwo = i*tau[1]
 
-		#ABP Results
-		temp_result = []
-		for j in BER:
-			temp_result.append(ABP(timeoutNumberOne,j,H,L,C,tau[0]))
+		if (mode == 1):
+			#ABP Results
+			temp_result = []
+			for j in BER:
+				temp_result.append(ABP(timeoutNumberOne,j,H,L,C,tau[0]))
 
-		for j in BER:
-			temp_result.append(ABP(timeoutNumberTwo,j,H,L,C,tau[1]))
+			for j in BER:
+				temp_result.append(ABP(timeoutNumberTwo,j,H,L,C,tau[1]))
 
-		ABP_Result.append(temp_result)
-
-
-
-		#ABP_NACK Results
-		temp_result = []
-		for j in BER:
-			temp_result.append(ABP_NACK(timeoutNumberOne,j,H,L,C,tau[0]))
-
-		for j in BER:
-			temp_result.append(ABP_NACK(timeoutNumberTwo,j,H,L,C,tau[1]))
-
-		ABP_NACK_Result.append(temp_result)
+			ABP_Result.append(temp_result)
 
 
 
-		#GBN Results
-		temp_result = []
-		for j in BER:
-			temp_result.append(GBN(timeoutNumberOne,j,H,L,C,tau[0]))
+		if (mode == 2):
+			#ABP_NACK Results
+			temp_result = []
+			for j in BER:
+				temp_result.append(ABP_NACK(timeoutNumberOne,j,H,L,C,tau[0]))
 
-		for j in BER:
-			temp_result.append(GBN(timeoutNumberTwo,j,H,L,C,tau[1]))
+			for j in BER:
+				temp_result.append(ABP_NACK(timeoutNumberTwo,j,H,L,C,tau[1]))
 
-		GBN_Result.append(temp_result)
+			ABP_NACK_Result.append(temp_result)
 
 
-	#Write results to ABP.csv
-	with open("ABP.csv", "wb") as f:
-		writer = csv.writer(f, delimiter = ",")
-		for row in ABP_Result:
-			writer.writerow(row)
 
-	#Write results to ABPNACK.csv
-	with open("ABP_NAK.csv", "wb") as f:
-		writer = csv.writer(f, delimiter = ",")
-		for row in ABP_NACK_Result:
-			writer.writerow(row)
+		if (mode == 3):
+			#GBN Results
+			temp_result = []
+			for j in BER:
+				temp_result.append(GBN(timeoutNumberOne,j,H,L,C,tau[0]))
 
-	#Write results to GBN.csv
-	with open("GBN.csv", "wb") as f:
-		writer = csv.writer(f, delimiter = ",")
-		for row in GBN_Result:
-			writer.writerow(row)
+			for j in BER:
+				temp_result.append(GBN(timeoutNumberTwo,j,H,L,C,tau[1]))
+
+			GBN_Result.append(temp_result)
+
+
+	if (mode == 1):
+		#Write results to ABP.csv
+		with open("ABP.csv", "wb") as f:
+			writer = csv.writer(f, delimiter = ",")
+			for row in ABP_Result:
+				writer.writerow(row)
+
+	if (mode == 2):
+		#Write results to ABPNACK.csv
+		with open("ABP_NAK.csv", "wb") as f:
+			writer = csv.writer(f, delimiter = ",")
+			for row in ABP_NACK_Result:
+				writer.writerow(row)
+
+	if (mode == 3):
+		#Write results to GBN.csv
+		with open("GBN.csv", "wb") as f:
+			writer = csv.writer(f, delimiter = ",")
+			for row in GBN_Result:
+				writer.writerow(row)
 
 
 
