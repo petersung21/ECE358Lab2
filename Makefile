@@ -10,10 +10,10 @@ execute_ABP_NAK: run_ABP_NAK.sh
 	./run_ABP_NAK.sh
 
 run_GBN.sh: main.py
-	"python main.py 3" > ./run_GBN.sh
+	@echo "python main\.py 3" > run_GBN.sh
 
 run_ABP.sh: main.py
-	"python main.py 1" > ./run_ABP.sh
+	@echo "python main\.py 1" > run_ABP.sh
 
 run_ABP_NAK.sh: main.py
-	"python main.py 2" > ./run_ABP_NAK.sh
+	@echo "python main\.py 2" > run_ABP_NAK.sh
